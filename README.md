@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ticket System: Frontend
 
-## Getting Started
+The web app for a helpdesk where users raise support tickets and admins track them until they are closed. It talks to the Spring Boot backend in the `ticket-system-backend` repo.
 
-First, run the development server:
+## Tech stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- [Next.js](https://nextjs.org) 16 with the App Router
+- TypeScript
+- Tailwind CSS 4
+- Spring Boot API (separate repo) at `http://localhost:8080`
+
+## Progress
+
+| Screen | Route | Status |
+| --- | --- | --- |
+| Home | `/` | Done |
+| Navbar (all pages) | n/a | Done |
+| Register | `/register` | Layout done, API not connected |
+| Login | `/login` | Not started |
+| My tickets | `/tickets` | Not started |
+| New ticket | `/tickets/new` | Not started |
+| All tickets (admin) | `/admin/tickets` | Not started |
+
+## Getting started
+
+1. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Create a `.env.local` file in the project root (next to `package.json`):
+
+   ```
+   NEXT_PUBLIC_API_URL=http://localhost:8080
+   ```
+
+3. Start the dev server:
+
+   ```bash
+   npm run dev
+   ```
+
+The app runs at `http://localhost:3000`. The backend must be running on port 8080, and its `frontend-origin` setting must be `http://localhost:3000` so the browser can call it.
+
+## Environment variables
+
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_API_URL` | Base URL of the backend API. It is visible in the browser, so never put secrets in a `NEXT_PUBLIC_` variable. |
+
+`.env.local` is ignored by git.
+
+## Project structure
+
+```
+app/
+  layout.tsx          # root layout: Navbar + page metadata
+  page.tsx            # Home
+  register/page.tsx   # Register form
+  components/
+    Navbar.tsx        # shared navigation
+  globals.css         # Tailwind import
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+A file named `page.tsx` inside a folder becomes a route, so `app/register/page.tsx` is served at `/register`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Planned routes and access
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Route | Logged out | User | Admin |
+| --- | --- | --- | --- |
+| `/` | Allowed | Allowed | Allowed |
+| `/login`, `/register` | Allowed | Redirect | Redirect |
+| `/tickets`, `/tickets/new` | Redirect to `/login` | Allowed | Allowed |
+| `/admin/tickets` | Redirect to `/login` | Redirect | Allowed |
 
-## Learn More
+The frontend redirects by role for a better experience, but the backend enforces access, so a direct API call from a user is still refused.
 
-To learn more about Next.js, take a look at the following resources:
+## Next steps
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Connect the Register form to `POST /auth/register`, with validation and error messages
+- Login page and an auth context that holds the current user
+- Protected pages for tickets and admin
+- Loading, empty and error states for the ticket lists
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Learnings
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- In the App Router a folder with a `page.tsx` is a route, and `layout.tsx` wraps every page
+- Server Components by default, and `"use client"` only where state or events are needed
+- Page metadata is exported from `layout.tsx` or from any `page.tsx`
+- `Link` from `next/link` for navigation, and it requires an `href`
+- Accessible forms: `label` connected to `input` with `htmlFor` and `id`
