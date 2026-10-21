@@ -6,7 +6,7 @@ export default function Home() {
       <h1 className="text-4xl font-bold text-gray-900">Get help, fast</h1>
 
       <p className="mt-8 max-w-md text-gray-600">
-        Raise a ticket and track it until it's resolved.
+        Raise a ticket and track it until it&apos;s resolved.
       </p>
 
       <Link
