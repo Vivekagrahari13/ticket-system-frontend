@@ -15,8 +15,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Helpdesk",
-  description: "Raise and track support tickets",
+  title: {
+    default: "Helpdesk | Raise and track support tickets",
+    template: "%s | Helpdesk",
+  },
+  description: "Raise support tickets and track them until they are resolved.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

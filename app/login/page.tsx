@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { api, ApiError } from "@/services/api";
+import PasswordInput from "@/components/PasswordInput";
 import { useAuth, type User } from "@/context/AuthContext";
 
 export default function LoginPage() {
@@ -69,12 +70,11 @@ export default function LoginPage() {
           <label htmlFor="password" className="block text-sm font-medium text-gray-700">
             Password
           </label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-gray-900"
+            onChange={setPassword}
+            autoComplete="current-password"
           />
           {fieldErrors.password && (
             <p className="mt-1 text-sm text-red-600">{fieldErrors.password}</p>
