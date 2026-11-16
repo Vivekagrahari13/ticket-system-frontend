@@ -3,16 +3,20 @@ import { useEffect, useState } from "react";
 import { api } from "@/services/api";
 import type { Ticket, TicketPage } from "@/types/ticket";
 
-type Params = { status: string; page: number; enabled: boolean };
+// "mine" is the caller's own tickets. "all" is every ticket and is for admins only.
+type Scope = "mine" | "all";
+type Params = { status: string; page: number; enabled: boolean; scope?: Scope };
 type Result = { key: string; data?: TicketPage; error?: string };
 
+const PATHS: Record<Scope, string> = { mine: "/tickets", all: "/admin/tickets" };
+
 // Loads one page of tickets. `loading` is derived: it is true until a result
-// exists for the current filter, page and reload counter.
-export function useTickets({ status, page, enabled }: Params) {
+// exists for the current scope, filter, page and reload counter.
+export function useTickets({ status, page, enabled, scope = "mine" }: Params) {
   const [reloadCount, setReloadCount] = useState(0);
   const [result, setResult] = useState<Result | null>(null);
 
-  const key = `${status}|${page}|${reloadCount}`;
+  const key = `${scope}|${status}|${page}|${reloadCount}`;
 
   useEffect(() => {
     if (!enabled) return;
@@ -21,7 +25,7 @@ export function useTickets({ status, page, enabled }: Params) {
     const query = new URLSearchParams({ page: String(page), size: "10" });
     if (status) query.set("status", status);
 
-    api<TicketPage>(`/tickets?${query}`)
+    api<TicketPage>(`${PATHS[scope]}?${query}`)
       .then((data) => {
         if (!cancelled) setResult({ key, data });
       })
@@ -32,7 +36,7 @@ export function useTickets({ status, page, enabled }: Params) {
     return () => {
       cancelled = true;
     };
-  }, [key, status, page, enabled]);
+  }, [key, scope, status, page, enabled]);
 
   const current = result?.key === key ? result : null;
 

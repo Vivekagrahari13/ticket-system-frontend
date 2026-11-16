@@ -36,11 +36,11 @@ export async function api<T>(
   const data = res.status === 204 ? null : await res.json().catch(() => null);
 
   if (!res.ok) {
-    throw new ApiError(
-      data?.message || "Something went wrong. Please try again.",
-      res.status,
-      data?.fieldErrors,
-    );
+    const base = data?.message || "Something went wrong. Please try again.";
+    // For server errors, show the reference so support can find the matching log lines
+    const message =
+      res.status >= 500 && data?.requestId ? `${base} (reference: ${data.requestId})` : base;
+    throw new ApiError(message, res.status, data?.fieldErrors);
   }
   return data as T;
 }

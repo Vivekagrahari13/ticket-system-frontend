@@ -4,6 +4,7 @@ const STYLES: Record<TicketStatus, string> = {
   OPEN: "bg-amber-100 text-amber-800",
   IN_PROGRESS: "bg-blue-100 text-blue-800",
   CLOSED: "bg-green-100 text-green-800",
+  WITHDRAWN: "bg-gray-100 text-gray-700",
 };
 
 export default function StatusBadge({ status }: { status: TicketStatus }) {
